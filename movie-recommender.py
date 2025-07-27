@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from sklearn.metrics.pairwise import cosine_similarity
 
 # -=| Data Loading |=-
 movies_file_path = 'Dataset/movies.csv'
@@ -41,20 +42,15 @@ df_ratings = df_ratings[df_ratings['movieId'].isin(movies_to_keep)]
 
 # Multi-hot Encoding Genres
 genre_split = df_movies['genres'].str.split('|')
-flattened_genre_split = [item for sublist in genre_split for item in sublist]
-unique_genres = set(flattened_genre_split)
+df_genres = (genre_split.explode().str.strip().pipe(pd.get_dummies).groupby(level=0).sum())
 
-genre_split = genre_split.to_frame()
-df_genres = genre_split.reindex(genre_split.columns.tolist() + list(unique_genres), axis=1, fill_value=0)
+df_ratings = df_ratings.merge(df_movies[['movieId', 'title']], on='movieId')
+df_ratings_with_genres = df_ratings.join(df_genres, on='movieId')
 
-for idx, genre_list in enumerate(genre_split['genres']):
-    for genre in genre_list:
-        df_genres.loc[idx, genre] = 1
+user_profiles = df_ratings_with_genres.groupby('userId')[np.array(df_genres.columns.tolist())].apply(lambda df: np.average(df, axis=0, weights=df_ratings_with_genres.loc[df.index, 'rating']))
+user_profiles = pd.DataFrame(user_profiles.tolist(), index=user_profiles.index, columns=np.array(df_genres.columns.tolist()))
+user_profiles = user_profiles.fillna(0) # assume preference for a genre is 0 if the user hasn't rated a movie in said genre
 
-df_genres = df_genres.drop(['genres'], axis=1)
-df_movies = df_movies.drop(['genres'], axis=1)
+similarity_matrix = cosine_similarity(user_profiles.values, df_genres.values)
+df_similarities = pd.DataFrame(similarity_matrix, index=user_profiles.index, columns=df_genres.index)
 
-df_movies = pd.concat([df_movies, df_genres], axis=1)
-
-# User-Item Matrix
-user_item_matrix = df_ratings.pivot(index='userId', columns='movieId', values='rating')
