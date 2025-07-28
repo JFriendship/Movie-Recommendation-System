@@ -2,7 +2,7 @@
 
 
 ## Overview
-This is a movie recommendation system that is designed to serve fast and relevant movie recommendations to users using Item-Based Collaborative Filtering (IBCF). This project uses the MovieLens Latest Small dataset and the movie suggestions are based on user ratings and item similarity that is stored in a PostgreSQL database.
+This is a movie recommendation system that is designed to serve fast and relevant movie recommendations to users using Content-Based Filtering (CBF). This project uses the MovieLens Latest Small dataset and the movie suggestions are based on user ratings and item similarity that is stored in a PostgreSQL database.
 
 
 ## Dataset
