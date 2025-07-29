@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.preprocessing import MinMaxScaler
 
 def recommend_movies(user_id, num_recommendations=5, movies_rated_by_user=None):
     user_similarities = df_user_movie_similarities.loc[user_id]
@@ -68,14 +69,20 @@ df_genres = (genre_split.explode().str.strip().pipe(pd.get_dummies).groupby(leve
 
 df_genres = df_genres.set_index(df_movies['movieId'])
 
-df_ratings = df_ratings.merge(df_movies[['movieId', 'title']], on='movieId')
-df_ratings_with_genres = df_ratings.join(df_genres, on='movieId')
+df_movies['year'] = df_movies['title'].str.extract(r'\((\d{4})\)').astype(float)
 
-user_profiles = df_ratings_with_genres.groupby('userId')[np.array(df_genres.columns.tolist())].apply(lambda df: np.average(df, axis=0, weights=df_ratings_with_genres.loc[df.index, 'rating']))
+scaler = MinMaxScaler()
+df_movies['normalized_year'] = scaler.fit_transform(df_movies[['year']])
+
+df_ratings = df_ratings.merge(df_movies[['movieId', 'title']], on='movieId')
+df_features = df_ratings.join(df_genres, on='movieId')
+df_features['year'] = df_movies.set_index('movieId')['normalized_year']
+
+user_profiles = df_features.groupby('userId')[np.array(df_genres.columns.tolist())].apply(lambda df: np.average(df, axis=0, weights=df_features.loc[df.index, 'rating']))
 user_profiles = pd.DataFrame(user_profiles.tolist(), index=user_profiles.index, columns=np.array(df_genres.columns.tolist()))
 user_profiles = user_profiles.fillna(0) # assume preference for a genre is 0 if the user hasn't rated a movie in said genre
 
-print(df_ratings_with_genres.head())
+print(df_features.head())
 
 # print("User profile for user 2:\n", user_profiles.loc[2])
 # print("Sum of profile vector:", user_profiles.loc[2].sum())
