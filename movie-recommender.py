@@ -18,7 +18,7 @@ def recommend_movies(user_id, num_recommendations=5, movies_rated_by_user=None):
 
     movie_subset = df_movies[['movieId', 'title']]
     df_recommendations = df_recommendations.reset_index(name='score').rename(columns={'index': 'movieId'})
-    return movie_subset.merge(df_recommendations, on='movieId')
+    return movie_subset.merge(df_recommendations, on='movieId').sort_values(by='score', ascending=False)
 
 # -=| Data Loading |=-
 movies_file_path = 'Dataset/movies.csv'
@@ -71,18 +71,21 @@ df_genres = df_genres.set_index(df_movies['movieId'])
 
 df_movies['year'] = df_movies['title'].str.extract(r'\((\d{4})\)').astype(float)
 
+
 scaler = MinMaxScaler()
 df_movies['normalized_year'] = scaler.fit_transform(df_movies[['year']])
+# print(df_movies['normalized_year'].info())
 
 df_ratings = df_ratings.merge(df_movies[['movieId', 'title']], on='movieId')
 df_features = df_ratings.join(df_genres, on='movieId')
-df_features['year'] = df_movies.set_index('movieId')['normalized_year']
+df_features = df_features.merge(df_movies[['movieId', 'normalized_year']], on='movieId', how='left')
+df_features = df_features.rename(columns={'normalized_year': 'year'})
+
+# print(df_features['year'].isna().sum())
 
 user_profiles = df_features.groupby('userId')[np.array(df_genres.columns.tolist())].apply(lambda df: np.average(df, axis=0, weights=df_features.loc[df.index, 'rating']))
 user_profiles = pd.DataFrame(user_profiles.tolist(), index=user_profiles.index, columns=np.array(df_genres.columns.tolist()))
 user_profiles = user_profiles.fillna(0) # assume preference for a genre is 0 if the user hasn't rated a movie in said genre
-
-print(df_features.head())
 
 # print("User profile for user 2:\n", user_profiles.loc[2])
 # print("Sum of profile vector:", user_profiles.loc[2].sum())
@@ -90,5 +93,7 @@ print(df_features.head())
 similarity_matrix = cosine_similarity(user_profiles.values, df_genres.values)
 df_user_movie_similarities = pd.DataFrame(similarity_matrix, index=user_profiles.index, columns=df_genres.index)
 
-recommendations = recommend_movies(user_id=4, num_recommendations=10)
+recommendations = recommend_movies(user_id=5, num_recommendations=10)
 print(recommendations)
+
+# Evaluation
