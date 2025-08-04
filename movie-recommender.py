@@ -1,24 +1,52 @@
 import numpy as np
 import pandas as pd
+from sklearn.model_selection import train_test_split
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.preprocessing import MinMaxScaler
 
-def recommend_movies(user_id, num_recommendations=5, movies_rated_by_user=None):
+# def recommend_movies(user_id, num_recommendations=10, movies_rated_by_user=None):
+#     user_similarities = df_user_movie_similarities.loc[user_id]
+
+#     if movies_rated_by_user is None:
+#         movies_rated_by_user = df_ratings[df_ratings['userId'] == user_id]['movieId'].values
+
+#     movies_rated_by_user = movies_rated_by_user[np.isin(movies_rated_by_user, df_movies['movieId'])]
+
+#     available_movies = user_similarities.drop(index=movies_rated_by_user, errors='ignore')
+#     print(f"Available movies for recommendation: {len(available_movies)}")
+
+#     df_recommendations = user_similarities.drop(index=movies_rated_by_user, errors='ignore').sort_values(ascending=False).head(num_recommendations)
+
+#     movie_subset = df_movies[['movieId', 'title']]
+#     df_recommendations = df_recommendations.reset_index(name='score').rename(columns={'index': 'movieId'})
+#     return movie_subset.merge(df_recommendations, on='movieId').sort_values(by='score', ascending=False)
+
+def recommend_movies(user_id, num_recommendations=10):
+    # Get the similarity vector for this user
     user_similarities = df_user_movie_similarities.loc[user_id]
 
-    if movies_rated_by_user is None:
-        movies_rated_by_user = df_ratings[df_ratings['userId'] == user_id]['movieId'].values
+    # Exclude only training items
+    train_movies = df_train_ratings[df_train_ratings['userId'] == user_id]['movieId'].values
+    available_movies = user_similarities.drop(index=train_movies, errors='ignore')
 
-    movies_rated_by_user = movies_rated_by_user[np.isin(movies_rated_by_user, df_movies['movieId'])]
+    # Recommend top-k items
+    top_k = available_movies.sort_values(ascending=False).head(num_recommendations)
+    top_k = top_k.reset_index(name='score').rename(columns={'index': 'movieId'})
 
-    available_movies = user_similarities.drop(index=movies_rated_by_user, errors='ignore')
-    print(f"Available movies for recommendation: {len(available_movies)}")
+    return df_movies[['movieId', 'title']].merge(top_k, on='movieId')
 
-    df_recommendations = user_similarities.drop(index=movies_rated_by_user, errors='ignore').sort_values(ascending=False).head(num_recommendations)
+def recommend_movies_all_users(num_recommendations=10):
+    all_recommendations = {}
+    for user_id in df_test_ratings['userId'].unique():
+        recommendations = recommend_movies(user_id=user_id, num_recommendations=num_recommendations)
+        all_recommendations[user_id] = recommendations['movieId'].tolist()
+    return all_recommendations
 
-    movie_subset = df_movies[['movieId', 'title']]
-    df_recommendations = df_recommendations.reset_index(name='score').rename(columns={'index': 'movieId'})
-    return movie_subset.merge(df_recommendations, on='movieId').sort_values(by='score', ascending=False)
+def recall_at_k(recommended_items, relevant_items):
+    if not relevant_items:
+        return None
+    hits = len(set(recommended_items) & set(relevant_items))
+    return hits / len(relevant_items)
 
 # -=| Data Loading |=-
 movies_file_path = 'Dataset/movies.csv'
@@ -52,7 +80,7 @@ df_movies = df_movies[df_movies['genres'] != '(no genres listed)']
 df_ratings = df_ratings[df_ratings['movieId'].isin(df_movies['movieId'])]
 
 # Remove less active users and movies
-user_rating_threshold = 20
+user_rating_threshold = 5
 user_rating_counts = df_ratings['userId'].value_counts()
 users_to_keep = user_rating_counts[user_rating_counts >= user_rating_threshold].index
 df_ratings = df_ratings[df_ratings['userId'].isin(users_to_keep)]
@@ -62,6 +90,20 @@ movie_rating_counts = df_ratings['movieId'].value_counts()
 movies_to_keep = movie_rating_counts[movie_rating_counts >= ratings_per_movie_threshold].index
 df_ratings = df_ratings[df_ratings['movieId'].isin(movies_to_keep)]
 df_movies = df_movies[df_movies['movieId'].isin(movies_to_keep)]    # Have to remove them from both dataframes
+
+train_list = []
+test_list = []
+
+for user_id, group in df_ratings.groupby('userId'):
+    if len(group) >= 5:
+        train, test = train_test_split(group, test_size=0.2, random_state=24)
+        train_list.append(train)
+        test_list.append(test)
+    else:
+        train_list.append(group)
+
+df_train_ratings = pd.concat(train_list)
+df_test_ratings = pd.concat(test_list)
 
 # Multi-hot Encoding Genres
 genre_split = df_movies['genres'].str.split('|')
@@ -76,8 +118,8 @@ scaler = MinMaxScaler()
 df_movies['normalized_year'] = scaler.fit_transform(df_movies[['year']])
 # print(df_movies['normalized_year'].info())
 
-df_ratings = df_ratings.merge(df_movies[['movieId', 'title']], on='movieId')
-df_features = df_ratings.join(df_genres, on='movieId')
+df_train_ratings = df_train_ratings.merge(df_movies[['movieId', 'title']], on='movieId')
+df_features = df_train_ratings.join(df_genres, on='movieId')
 df_features = df_features.merge(df_movies[['movieId', 'normalized_year']], on='movieId', how='left')
 df_features = df_features.rename(columns={'normalized_year': 'year'})
 
@@ -93,7 +135,22 @@ user_profiles = user_profiles.fillna(0) # assume preference for a genre is 0 if 
 similarity_matrix = cosine_similarity(user_profiles.values, df_genres.values)
 df_user_movie_similarities = pd.DataFrame(similarity_matrix, index=user_profiles.index, columns=df_genres.index)
 
+# Example Recommendation
 recommendations = recommend_movies(user_id=5, num_recommendations=10)
 print(recommendations)
 
 # Evaluation
+test_recommendations = recommend_movies_all_users(num_recommendations=10)
+ground_truth = df_test_ratings.groupby('userId')['movieId'].apply(set).to_dict()
+
+recalls = []
+
+for user_id in test_recommendations:
+    recs = test_recommendations[user_id]
+    true_items = ground_truth.get(user_id, set())
+    score = recall_at_k(recs, true_items)
+    if score is not None:
+        recalls.append(score)
+
+average_recall = np.mean(recalls)
+print(f"Average Recall@10: {average_recall:.4f}")
