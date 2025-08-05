@@ -3,6 +3,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.preprocessing import MinMaxScaler
+from recommender.preprocessing import load_data
 
 # def recommend_movies(user_id, num_recommendations=10, movies_rated_by_user=None):
 #     user_similarities = df_user_movie_similarities.loc[user_id]
@@ -49,11 +50,7 @@ def recall_at_k(recommended_items, relevant_items):
     return hits / len(relevant_items)
 
 # -=| Data Loading |=-
-movies_file_path = 'Dataset/movies.csv'
-ratings_file_path = 'Dataset/ratings.csv'
-
-df_movies = pd.read_csv(movies_file_path)
-df_ratings = pd.read_csv(ratings_file_path)
+df_movies, df_ratings = load_data('data/movies.csv', 'data/ratings.csv')
 
 # -=| Feature Engineering |=-
 # These movie ids are sourced from the EDA
