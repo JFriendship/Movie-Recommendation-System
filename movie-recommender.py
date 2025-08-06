@@ -64,11 +64,8 @@ for user_id, group in df_ratings.groupby('userId'):
 df_train_ratings = pd.concat(train_list)
 df_test_ratings = pd.concat(test_list)
 
-# Multi-hot Encoding Genres
-genre_split = df_movies['genres'].str.split('|')
-df_genres = (genre_split.explode().str.strip().pipe(pd.get_dummies).groupby(level=0).sum())
+df_genres = pp.encode_genres(df_movies=df_movies)
 
-df_genres = df_genres.set_index(df_movies['movieId'])
 
 df_train_ratings = df_train_ratings.merge(df_movies[['movieId', 'title']], on='movieId')
 df_features = df_train_ratings.join(df_genres, on='movieId')

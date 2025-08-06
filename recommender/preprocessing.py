@@ -40,3 +40,13 @@ def filter_less_active_data(df_ratings, df_movies, min_user_ratings=5, min_movie
     df_movies = df_movies[df_movies['movieId'].isin(movies_to_keep)]
     
     return df_ratings, df_movies
+
+def encode_genres(df_movies):
+    genre_split = df_movies['genres'].str.split('|')
+    df_genres = (genre_split.explode()
+                           .str.strip()
+                           .pipe(pd.get_dummies)
+                           .groupby(level=0)
+                           .sum())
+    df_genres = df_genres.set_index(df_movies['movieId'])
+    return df_genres
