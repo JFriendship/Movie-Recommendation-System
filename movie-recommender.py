@@ -3,24 +3,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.preprocessing import MinMaxScaler
-from recommender.preprocessing import load_data
-
-# def recommend_movies(user_id, num_recommendations=10, movies_rated_by_user=None):
-#     user_similarities = df_user_movie_similarities.loc[user_id]
-
-#     if movies_rated_by_user is None:
-#         movies_rated_by_user = df_ratings[df_ratings['userId'] == user_id]['movieId'].values
-
-#     movies_rated_by_user = movies_rated_by_user[np.isin(movies_rated_by_user, df_movies['movieId'])]
-
-#     available_movies = user_similarities.drop(index=movies_rated_by_user, errors='ignore')
-#     print(f"Available movies for recommendation: {len(available_movies)}")
-
-#     df_recommendations = user_similarities.drop(index=movies_rated_by_user, errors='ignore').sort_values(ascending=False).head(num_recommendations)
-
-#     movie_subset = df_movies[['movieId', 'title']]
-#     df_recommendations = df_recommendations.reset_index(name='score').rename(columns={'index': 'movieId'})
-#     return movie_subset.merge(df_recommendations, on='movieId').sort_values(by='score', ascending=False)
+import recommender.preprocessing as pp
 
 def recommend_movies(user_id, num_recommendations=10):
     # Get the similarity vector for this user
@@ -50,18 +33,9 @@ def recall_at_k(recommended_items, relevant_items):
     return hits / len(relevant_items)
 
 # -=| Data Loading |=-
-df_movies, df_ratings = load_data('data/movies.csv', 'data/ratings.csv')
+df_movies, df_ratings = pp.load_data('data/movies.csv', 'data/ratings.csv')
 
 # -=| Feature Engineering |=-
-# These movie ids are sourced from the EDA
-bad_movie_ids = [26958, 168358, 6003, 32600, 64997]
-replacement_movie_ids = [838, 2851, 144606, 147002, 34048]
-
-# Remove Duplicates
-boolean_mask_remove = ~df_movies['movieId'].isin(bad_movie_ids)
-df_movies = df_movies[boolean_mask_remove]
-
-# Replace Rating Duplicates
 movie_replacement_map = {
     26958: 838,
     168358: 2851,
@@ -69,12 +43,9 @@ movie_replacement_map = {
     32600: 147002,
     64997: 34048
 }
-# df_ratings['movieId'].replace(bad_movie_ids, replacement_movie_ids)
-df_ratings['movieId'] = df_ratings['movieId'].replace(movie_replacement_map)
 
-# Removing movies with "(no genres listed)"
-df_movies = df_movies[df_movies['genres'] != '(no genres listed)']
-df_ratings = df_ratings[df_ratings['movieId'].isin(df_movies['movieId'])]
+df_movies = pp.clean_movies(df_movies)
+df_ratings = pp.clean_ratings(df_ratings, movie_replacement_map=movie_replacement_map)
 
 # Remove less active users and movies
 user_rating_threshold = 5
@@ -107,13 +78,6 @@ genre_split = df_movies['genres'].str.split('|')
 df_genres = (genre_split.explode().str.strip().pipe(pd.get_dummies).groupby(level=0).sum())
 
 df_genres = df_genres.set_index(df_movies['movieId'])
-
-df_movies['year'] = df_movies['title'].str.extract(r'\((\d{4})\)').astype(float)
-
-
-scaler = MinMaxScaler()
-df_movies['normalized_year'] = scaler.fit_transform(df_movies[['year']])
-# print(df_movies['normalized_year'].info())
 
 df_train_ratings = df_train_ratings.merge(df_movies[['movieId', 'title']], on='movieId')
 df_features = df_train_ratings.join(df_genres, on='movieId')
