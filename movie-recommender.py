@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 import recommender.preprocessing as pp
+import recommender.model as model
 
 def recommend_movies(user_id, num_recommendations=10):
     # Get the similarity vector for this user
@@ -50,20 +51,9 @@ df_ratings, df_movies = pp.filter_less_active_data(df_ratings=df_ratings, df_mov
 
 df_train_ratings, df_test_ratings = pp.user_rating_train_test_split(df_ratings=df_ratings)
 
-
 df_genres = pp.encode_genres(df_movies=df_movies)
 
-
-df_train_ratings = df_train_ratings.merge(df_movies[['movieId', 'title']], on='movieId')
-df_features = df_train_ratings.join(df_genres, on='movieId')
-df_features = df_features.merge(df_movies[['movieId', 'normalized_year']], on='movieId', how='left')
-df_features = df_features.rename(columns={'normalized_year': 'year'})
-
-# print(df_features['year'].isna().sum())
-
-user_profiles = df_features.groupby('userId')[np.array(df_genres.columns.tolist())].apply(lambda df: np.average(df, axis=0, weights=df_features.loc[df.index, 'rating']))
-user_profiles = pd.DataFrame(user_profiles.tolist(), index=user_profiles.index, columns=np.array(df_genres.columns.tolist()))
-user_profiles = user_profiles.fillna(0) # assume preference for a genre is 0 if the user hasn't rated a movie in said genre
+user_profiles = model.create_user_profiles(df_ratings=df_train_ratings, df_movies=df_movies, df_genres=df_genres)
 
 # print("User profile for user 2:\n", user_profiles.loc[2])
 # print("Sum of profile vector:", user_profiles.loc[2].sum())
