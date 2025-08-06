@@ -1,8 +1,6 @@
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import train_test_split
 from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.preprocessing import MinMaxScaler
 import recommender.preprocessing as pp
 
 def recommend_movies(user_id, num_recommendations=10):
@@ -50,19 +48,8 @@ df_ratings = pp.clean_ratings(df_ratings, movie_replacement_map=movie_replacemen
 # Remove less active users and movies
 df_ratings, df_movies = pp.filter_less_active_data(df_ratings=df_ratings, df_movies=df_movies)
 
-train_list = []
-test_list = []
+df_train_ratings, df_test_ratings = pp.user_rating_train_test_split(df_ratings=df_ratings)
 
-for user_id, group in df_ratings.groupby('userId'):
-    if len(group) >= 5:
-        train, test = train_test_split(group, test_size=0.2, random_state=24)
-        train_list.append(train)
-        test_list.append(test)
-    else:
-        train_list.append(group)
-
-df_train_ratings = pd.concat(train_list)
-df_test_ratings = pd.concat(test_list)
 
 df_genres = pp.encode_genres(df_movies=df_movies)
 
