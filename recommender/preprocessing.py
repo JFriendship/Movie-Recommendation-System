@@ -27,4 +27,16 @@ def clean_ratings(df_ratings, movie_replacement_map=None):
         df_ratings['movieId'] = df_ratings['movieId'].replace(movie_replacement_map)
     return df_ratings
 
-
+def filter_less_active_data(df_ratings, df_movies, min_user_ratings=5, min_movie_ratings=10):
+    # Remove users with few ratings
+    user_rating_counts = df_ratings['userId'].value_counts()
+    users_to_keep = user_rating_counts[user_rating_counts >= min_user_ratings].index
+    df_ratings = df_ratings[df_ratings['userId'].isin(users_to_keep)]
+    
+    # Remove movies with few ratings
+    movie_rating_counts = df_ratings['movieId'].value_counts()
+    movies_to_keep = movie_rating_counts[movie_rating_counts >= min_movie_ratings].index
+    df_ratings = df_ratings[df_ratings['movieId'].isin(movies_to_keep)]
+    df_movies = df_movies[df_movies['movieId'].isin(movies_to_keep)]
+    
+    return df_ratings, df_movies

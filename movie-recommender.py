@@ -48,16 +48,7 @@ df_movies = pp.clean_movies(df_movies)
 df_ratings = pp.clean_ratings(df_ratings, movie_replacement_map=movie_replacement_map)
 
 # Remove less active users and movies
-user_rating_threshold = 5
-user_rating_counts = df_ratings['userId'].value_counts()
-users_to_keep = user_rating_counts[user_rating_counts >= user_rating_threshold].index
-df_ratings = df_ratings[df_ratings['userId'].isin(users_to_keep)]
-
-ratings_per_movie_threshold = 10
-movie_rating_counts = df_ratings['movieId'].value_counts()
-movies_to_keep = movie_rating_counts[movie_rating_counts >= ratings_per_movie_threshold].index
-df_ratings = df_ratings[df_ratings['movieId'].isin(movies_to_keep)]
-df_movies = df_movies[df_movies['movieId'].isin(movies_to_keep)]    # Have to remove them from both dataframes
+df_ratings, df_movies = pp.filter_less_active_data(df_ratings=df_ratings, df_movies=df_movies)
 
 train_list = []
 test_list = []
