@@ -4,26 +4,26 @@ from sklearn.metrics.pairwise import cosine_similarity
 import recommender.preprocessing as pp
 import recommender.model as model
 
-def recommend_movies(user_id, num_recommendations=10):
-    # Get the similarity vector for this user
-    user_similarities = df_user_movie_similarities.loc[user_id]
+# def recommend_movies(user_id, num_recommendations=10):
+#     # Get the similarity vector for this user
+#     user_similarities = df_user_movie_similarities.loc[user_id]
 
-    # Exclude only training items
-    train_movies = df_train_ratings[df_train_ratings['userId'] == user_id]['movieId'].values
-    available_movies = user_similarities.drop(index=train_movies, errors='ignore')
+#     # Exclude only training items
+#     train_movies = df_train_ratings[df_train_ratings['userId'] == user_id]['movieId'].values
+#     available_movies = user_similarities.drop(index=train_movies, errors='ignore')
 
-    # Recommend top-k items
-    top_k = available_movies.sort_values(ascending=False).head(num_recommendations)
-    top_k = top_k.reset_index(name='score').rename(columns={'index': 'movieId'})
+#     # Recommend top-k items
+#     top_k = available_movies.sort_values(ascending=False).head(num_recommendations)
+#     top_k = top_k.reset_index(name='score').rename(columns={'index': 'movieId'})
 
-    return df_movies[['movieId', 'title']].merge(top_k, on='movieId')
+#     return df_movies[['movieId', 'title']].merge(top_k, on='movieId')
 
-def recommend_movies_all_users(num_recommendations=10):
-    all_recommendations = {}
-    for user_id in df_test_ratings['userId'].unique():
-        recommendations = recommend_movies(user_id=user_id, num_recommendations=num_recommendations)
-        all_recommendations[user_id] = recommendations['movieId'].tolist()
-    return all_recommendations
+# def recommend_movies_all_users(num_recommendations=10):
+#     all_recommendations = {}
+#     for user_id in df_test_ratings['userId'].unique():
+#         recommendations = model.recommend_movies(user_id=user_id, num_recommendations=num_recommendations)
+#         all_recommendations[user_id] = recommendations['movieId'].tolist()
+#     return all_recommendations
 
 def recall_at_k(recommended_items, relevant_items):
     if not relevant_items:
@@ -58,15 +58,21 @@ user_profiles = model.create_user_profiles(df_ratings=df_train_ratings, df_movie
 # print("User profile for user 2:\n", user_profiles.loc[2])
 # print("Sum of profile vector:", user_profiles.loc[2].sum())
 
-similarity_matrix = cosine_similarity(user_profiles.values, df_genres.values)
-df_user_movie_similarities = pd.DataFrame(similarity_matrix, index=user_profiles.index, columns=df_genres.index)
+# similarity_matrix = cosine_similarity(user_profiles.values, df_genres.values)
+# df_user_movie_similarities = pd.DataFrame(similarity_matrix, index=user_profiles.index, columns=df_genres.index)
+df_user_movie_similarities = model.compute_similarity_matrix(user_profiles=user_profiles, df_genres=df_genres)
 
 # Example Recommendation
-recommendations = recommend_movies(user_id=5, num_recommendations=10)
+# recommendations = recommend_movies(user_id=5, num_recommendations=10)
+recommendations = model.recommend_movies(user_id=5, 
+                                         df_user_movie_similarities=df_user_movie_similarities, 
+                                         df_ratings=df_train_ratings,
+                                         df_movies=df_movies,
+                                         num_recommendations=10)
 print(recommendations)
 
 # Evaluation
-test_recommendations = recommend_movies_all_users(num_recommendations=10)
+test_recommendations = model.recommend_movies_all_users(user_movie_similarities=df_user_movie_similarities, df_ratings=df_train_ratings, df_movies=df_movies, num_recommendations=10)
 ground_truth = df_test_ratings.groupby('userId')['movieId'].apply(set).to_dict()
 
 recalls = []
