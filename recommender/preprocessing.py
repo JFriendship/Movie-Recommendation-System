@@ -1,7 +1,20 @@
 import pandas as pd
 import numpy as np
+import sqlite3
+import os
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
+
+def load_data_from_db():
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(BASE_DIR, '..', 'db', 'movies.db')
+    conn = sqlite3.connect(db_path)
+
+    df_movies = pd.read_sql_query("SELECT * FROM movies", conn)
+    df_ratings = pd.read_sql_query("SELECT * FROM ratings", conn)
+
+    conn.close()
+    return df_movies, df_ratings
 
 def load_data(movies_path='data/movies.csv', ratings_path='data/ratings.csv'):
     df_movies = pd.read_csv(movies_path)

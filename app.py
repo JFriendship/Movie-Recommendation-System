@@ -5,19 +5,7 @@ import pandas as pd
 
 app = Flask(__name__)
 
-# Create similarity matrix and load the data (I know this is quite inefficient at the moment)
-df_movies, df_ratings = pp.load_data('data/movies.csv', 'data/ratings.csv')
-
-movie_replacement_map = {
-    26958: 838,
-    168358: 2851,
-    6003: 144606,
-    32600: 147002,
-    64997: 34048
-}
-
-df_movies = pp.clean_movies(df_movies)
-df_ratings = pp.clean_ratings(df_ratings, movie_replacement_map=movie_replacement_map)
+df_movies, df_ratings = pp.load_data_from_db()
 
 # Remove less active users and movies
 df_ratings, df_movies = pp.filter_less_active_data(df_ratings=df_ratings, df_movies=df_movies)
