@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title> Recco </title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    </head>
+    <body>
+        <div class="index-wrapper"> 
+            <div class="nav-bar-wrapper"> 
+                <div class="left-aligned-nav-wrapper">
+                    <div class="nav-title-text"> RECCO </div>
+                </div>
+                <div class="right-aligned-nav-wrapper">
+                    <form action="{{ url_for('login') }}" method="get">
+                        <button class="nav-sign-in-button" type="submit"> Login </button>
+                    </form>
+                    <form action="{{ url_for('register') }}" method="get">
+                        <button class="nav-sign-in-button type="submit"> Register </button>
+                    </form>
+                    
+                    
+                </div>
+            </div>
+            <div class="welcome-wrapper">
+                <div class="welcome-text"> Welcome to Recco </div>
+
+
+                <div class="description-text"> 
+                    If you would like to start creating your user profile
+                    and receive movie recommendations, please login
+                    to continue. </div>
+                
+
+            </div>
+        </div>
+    </body>
+</html>

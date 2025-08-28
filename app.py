@@ -13,15 +13,6 @@ app = Flask(__name__)
 load_dotenv()
 app.secret_key = os.environ["FLASK_SECRET_KEY"]
 
-df_movies, df_ratings = pp.load_data_from_db()
-
-# Remove less active users and movies
-df_ratings, df_movies = pp.filter_less_active_data(df_ratings=df_ratings, df_movies=df_movies)
-df_train_ratings, df_test_ratings = pp.user_rating_train_test_split(df_ratings=df_ratings)
-df_genres = pp.encode_genres(df_movies=df_movies)
-user_profiles = model.create_user_profiles(df_ratings=df_train_ratings, df_movies=df_movies, df_genres=df_genres)
-df_user_movie_similarities = model.compute_similarity_matrix(user_profiles=user_profiles, df_genres=df_genres)
-
 def get_db():
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     sys.path.append(os.path.join(BASE_DIR, '..'))
@@ -32,6 +23,15 @@ def get_db():
         g.db = sqlite3.connect(db_path)
         g.db.row_factory = sqlite3.Row
     return g.db
+
+def user_has_ratings(user_id):
+    db = get_db()
+    cur = db.execute("""
+        SELECT EXISTS(
+            SELECT 1 FROM ratings WHERE userId = ?
+        )
+    """, (user_id,))
+    return cur.fetchone()[0] == 1
 
 def login_required(view):
     @wraps(view)
@@ -44,11 +44,11 @@ def login_required(view):
 
 # -=| Routes |=- #
 @app.route('/')
-def index():
+def home():
     # if user is logged in, load the user's page
 
     #else, return welcome page template with link to login page
-    return render_template('index.html')
+    return render_template('home.html')
 
 @app.route('/register', methods=["GET", "POST"])
 def register():
@@ -77,13 +77,15 @@ def login():
         password = request.form["password"]
 
         db = get_db()
+        # Add  AND is_dataset_user = 0  after  username = ?  to ignore dataset accounts
         user = db.execute("""
-            SELECT * FROM users WHERE username = ? AND is_dataset_user = 0
+            SELECT * FROM users WHERE username = ?
         """, (username,)).fetchone()
 
         if user and check_password_hash(user["password_hash"], password):
             session.clear()
             session["user_id"] = user["user_id"]
+            session["username"] = username
             return redirect(url_for("recommendations"))
         else:
             return "Invalid login credentials", 401
@@ -95,25 +97,49 @@ def logout():
     session.clear()
     return redirect(url_for("home"))
 
-@app.route('/recommendations', methods=['GET', 'POST'])
+@app.route('/recommendations')
 @login_required
 def recommendations():
     recommendations = None
-    if request.method == 'POST':
-        user_id = request.form.get('user_id')
-        try:
-            user_id = int(user_id)
-        except (ValueError, TypeError):
-            print("Invalid user_id submitted.")
 
-        if user_id:
-            recommendations = model.recommend_movies(user_id=user_id, 
-                                                     df_user_movie_similarities=df_user_movie_similarities, 
-                                                     df_ratings=df_train_ratings,
-                                                     df_movies=df_movies,
-                                                     num_recommendations=10)
-            recommendations = recommendations['title'].tolist()
-    return render_template('recommendations.html', recommendations=recommendations)
+    user_id = session["user_id"]
+    if user_has_ratings(user_id) == 0:
+        return render_template('recommendations.html', 
+                               recommendations=recommendations, 
+                               username=session["username"]
+                            )
+
+    db = get_db()
+
+    df_movies = pd.read_sql_query("SELECT * FROM movies", db)
+    df_ratings = pd.read_sql_query("SELECT * FROM ratings", db)
+    # df_movies, df_ratings = pp.load_data_from_db()
+
+    # Remove less active users and movies
+    # df_ratings, df_movies = pp.filter_less_active_data(df_ratings=df_ratings, df_movies=df_movies)
+
+    df_genres = pp.encode_genres(df_movies=df_movies)
+    user_profiles = model.create_user_profiles(df_ratings=df_ratings, df_movies=df_movies, df_genres=df_genres)
+    df_user_movie_similarities = model.compute_similarity_matrix(user_profiles=user_profiles, df_genres=df_genres)
+
+    
+    try:
+        user_id = int(user_id)
+    except (ValueError, TypeError):
+        print("Something went wrong. Invalid user_id.")
+
+    recommendations = model.recommend_movies(user_id=user_id, 
+                                                df_user_movie_similarities=df_user_movie_similarities, 
+                                                df_ratings=df_ratings,
+                                                df_movies=df_movies,
+                                                num_recommendations=10)
+    recommendations = recommendations['title'].tolist()
+    return render_template('recommendations.html', recommendations=recommendations, username=session["username"])
+
+@app.route("/ratings")
+@login_required
+def ratings():
+    return render_template('ratings.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

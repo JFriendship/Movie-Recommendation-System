@@ -58,7 +58,8 @@ def create_users_table():
     except Exception as e:
         print(f"Error: {e}")
     finally:
-        conn.close()
+        if conn:
+            conn.close()
 
 if __name__ == "__main__":
     create_users_table()
