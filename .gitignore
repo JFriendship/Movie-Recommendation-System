@@ -1,3 +1,4 @@
 data/
 recommender/__pycache__/
 db/
+.env

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title> Login | Recco </title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    </head>
+    <body>
+        <div>
+            <div> Login to Recco </div>
+            <form action="/login" method="post">
+                <label for="username"> Username: </label>
+                <input type="text" id="username" name="username"><br>
+                <label for="password"> Password: </label>
+                <input type="text" id="password" name="password"><br>
+                <input type="submit" value="Submit">
+            </form>
+            <div> Don't have an account? </div>
+            <form action="{{ url_for('register') }}" method="get">
+                <button type="submit"> Register </button>
+            </form>
+        </div>
+    </body>
+</html>
