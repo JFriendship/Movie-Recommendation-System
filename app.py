@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session, redirect, url_for, g
+from flask import Flask, render_template, redirect, url_for, jsonify, request, session, g
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 import recommender.model as model
@@ -23,6 +23,12 @@ def get_db():
         g.db = sqlite3.connect(db_path)
         g.db.row_factory = sqlite3.Row
     return g.db
+
+@app.teardown_appcontext
+def close_db(exception):
+    db = g.pop("db", None)
+    if db is not None:
+        db.close()
 
 def user_has_ratings(user_id):
     db = get_db()
@@ -140,6 +146,26 @@ def recommendations():
 @login_required
 def ratings():
     return render_template('ratings.html')
+
+@app.route("/search")
+def search():
+    query = request.args.get("q", "")
+    if not query:
+        return jsonify([])
+    
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT title 
+        FROM movies
+        WHERE title LIKE ? 
+        ORDER BY title
+        LIMIT 10
+    """, (query + "%",))
+
+    results = [row["title"] for row in cur.fetchall()]
+
+    return jsonify(results)
 
 if __name__ == '__main__':
     app.run(debug=True)

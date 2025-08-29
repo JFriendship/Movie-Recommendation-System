@@ -18,6 +18,10 @@
         {% elif recommendations is none %}
             <p>No recommendations available for this user.</p>
         {% endif %}
+        
+        <input type="text" id="searchBox" placeholder="Search movies..." />
+        <div id="results"></div>
+        <script src="{{ url_for('static', filename='js/search.js') }}"></script>
     </div>
 </body>
 </html>
