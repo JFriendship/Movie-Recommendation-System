@@ -20,7 +20,11 @@
         {% endif %}
         
         <input type="text" id="searchBox" placeholder="Search movies..." />
-        <div id="results"></div>
+        <div id="search-results-wrapper">
+            <ul id="results-list">
+                <div id="results"></div>
+            </ul>
+        </div>
         <script src="{{ url_for('static', filename='js/search.js') }}"></script>
     </div>
 </body>
