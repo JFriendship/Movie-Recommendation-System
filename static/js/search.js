@@ -1,4 +1,4 @@
-const box = document.getElementById("searchBox");
+const box = document.getElementById("search-box");
 const results_div = document.getElementById("results");
 
 box.addEventListener("input", async () => {
