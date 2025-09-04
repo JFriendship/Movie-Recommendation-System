@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title> Add Movie Rating | Recco </title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/add_rating.css') }}">
+    </head>
+    <body>
+        <div> Add Ratings Here </div>
+        <form action="/add_rating" method="post">
+            <input class="user-new-movie" type="text" id="search-box" name="search-box" placeholder="Search movies..." />
+            <div id="search-results-wrapper">
+                <ul id="results-list">
+                    <div id="results"></div>
+                </ul>
+            </div>
+            <div class="user-new-rating-wrapper">
+                <div class="stars">
+                    ★★★★★
+                    <div class="stars-fill">★★★★★</div>
+                </div>
+                <input type="range" class="star-rating-range" id="rating" name="rating" min="0" max="5" step="0.5" value="0">
+            </div>
+            <input type="submit" value="Add Rating">
+        </form>
+        <form action="{{ url_for('recommendations') }}" method="get">
+            <button class="done-button" type="submit"> Done </button>
+        </form>
+        {% if success %}
+            <p> Rating Added. </p>
+        {% endif %}
+
+    </body>
+    <script src="{{ url_for('static', filename='js/search.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ratingStars.js') }}"></script>
+</html>

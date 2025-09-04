@@ -6,6 +6,7 @@ import recommender.preprocessing as pp
 import pandas as pd
 from dotenv import load_dotenv
 from functools import wraps
+import datetime     # for adding timestamp data
 import os, sys
 
 app = Flask(__name__)
@@ -103,7 +104,7 @@ def logout():
     session.clear()
     return redirect(url_for("home"))
 
-@app.route('/recommendations')
+@app.route('/recommendations', methods=["GET", "POST"])
 @login_required
 def recommendations():
     recommendations = None
@@ -119,10 +120,6 @@ def recommendations():
 
     df_movies = pd.read_sql_query("SELECT * FROM movies", db)
     df_ratings = pd.read_sql_query("SELECT * FROM ratings", db)
-    # df_movies, df_ratings = pp.load_data_from_db()
-
-    # Remove less active users and movies
-    # df_ratings, df_movies = pp.filter_less_active_data(df_ratings=df_ratings, df_movies=df_movies)
 
     df_genres = pp.encode_genres(df_movies=df_movies)
     user_profiles = model.create_user_profiles(df_ratings=df_ratings, df_movies=df_movies, df_genres=df_genres)
@@ -142,10 +139,39 @@ def recommendations():
     recommendations = recommendations['title'].tolist()
     return render_template('recommendations.html', recommendations=recommendations, username=session["username"])
 
-@app.route("/ratings")
-@login_required
-def ratings():
-    return render_template('ratings.html')
+@app.route("/add_rating", methods=["GET", "POST"])
+# @login_required
+def add_rating():
+    if request.method == "POST":
+        movie_title = request.form["search-box"]
+        # check to make sure movie is in database
+        rating = float(request.form["rating"])
+        # Get current timestamp
+        current_utc_time = datetime.datetime.now(datetime.timezone.utc)
+        unix_timestamp = int(current_utc_time.timestamp())
+
+        conn = get_db()
+        cur = conn.cursor()
+        # Get movie id 
+        selected_movieId = cur.execute(
+            "SELECT movieId FROM movies WHERE title = ?",
+            (movie_title,)
+        ).fetchone()
+        
+        if selected_movieId is None:
+            return "Movie not found", 404
+        
+        movieId = selected_movieId[0]
+
+        # Add movie rating to ratings table
+        cur.execute(
+            "INSERT INTO ratings (userId, movieId, rating, timestamp) VALUES (?, ?, ?, ?)",
+            (session["user_id"], movieId, rating, unix_timestamp)
+        )
+        conn.commit()
+
+        return render_template('add_rating.html', success=True)
+    return render_template('add_rating.html')
 
 @app.route("/search")
 def search():
@@ -166,6 +192,7 @@ def search():
     results = [row["title"] for row in cur.fetchall()]
 
     return jsonify(results)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

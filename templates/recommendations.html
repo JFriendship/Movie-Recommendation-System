@@ -3,6 +3,7 @@
 <html>
 <head>
     <title>Recommendations</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/recommendations.css') }}">
 </head>
 <body>
     <div class="recommendations-wrapper">
@@ -18,14 +19,10 @@
         {% elif recommendations is none %}
             <p>No recommendations available for this user.</p>
         {% endif %}
-        
-        <input type="text" id="searchBox" placeholder="Search movies..." />
-        <div id="search-results-wrapper">
-            <ul id="results-list">
-                <div id="results"></div>
-            </ul>
-        </div>
-        <script src="{{ url_for('static', filename='js/search.js') }}"></script>
+
+        <form action="{{ url_for('add_rating') }}" method="get">
+            <button class="add-rating-button" type="submit"> Add Ratings </button>
+        </form>
     </div>
 </body>
 </html>
