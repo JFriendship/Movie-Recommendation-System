@@ -157,9 +157,10 @@ def add_rating():
             "SELECT movieId FROM movies WHERE title = ?",
             (movie_title,)
         ).fetchone()
+        
         if selected_movieId is None:
-            # Handle case where movie not found
             return "Movie not found", 404
+        
         movieId = selected_movieId[0]
 
         # Add movie rating to ratings table

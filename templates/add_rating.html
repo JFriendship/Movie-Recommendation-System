@@ -26,6 +26,9 @@
         <form action="{{ url_for('recommendations') }}" method="get">
             <button class="done-button" type="submit"> Done </button>
         </form>
+        {% if success %}
+            <p> Rating Added. </p>
+        {% endif %}
 
     </body>
     <script src="{{ url_for('static', filename='js/search.js') }}"></script>
