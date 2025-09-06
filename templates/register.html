@@ -2,25 +2,37 @@
 
 <html>
     <head>
-        <title> Recommendation Regristration </title>
+        <title> RECCO | Register </title>
         <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
     </head>
     <body>
-        <div> Welcome to Recco Registration! </div>
-        <form action="/register" method="post">
-            <label for="username"> Username: </label>
-            <input type="text" id="username" name="username"><br>
-            <div class="password-wrapper">
-                <label for="password"> Password: </label>
-                <input type="password" id="password" name="password"><br>
-                <button type="button" id="togglePassword"> Show </button>
+        <div class="register-page-wrapper">
+            <form action="{{ url_for('home') }}" method="get">
+                <button type="submit" class="website-title-home-button"> RECCO </button>
+            </form>
+            <div class="register-wrapper">
+                <div class="register-title-text"> Register </div>
+                <form class="register-form" action="/register" method="post">
+                    <div class="username-wrapper">
+                        <label for="username" class="username-label"> Username </label>
+                        <input type="text" class="username-input" id="username" name="username">
+                    </div>
+                    <div class="password-wrapper">
+                        <label for="password" class="password-label"> Password </label>
+                        <div class="password-input-wrapper">
+                            <input type="password" class="password-input" id="password" name="password">
+                            <button type="button" class="password-toggle-button" id="togglePassword"> Show </button>
+                        </div>
+                    </div>
+                    <input class="register-button" type="submit" value="Register">
+                </form>
+                <div class="has-account-question-text"> Already have an account? </div>
+                <form action="{{ url_for('login') }}" method="get">
+                    <button type="submit" class="login-button"> Sign in </button>
+                </form>
             </div>
-            <input type="submit" value="Register">
-        </form>
-        <div> Already have an account? </div>
-        <form action="{{ url_for('login') }}" method="get">
-            <button type="submit"> Login </button>
-        </form>
+            
+        </div>
 
     </body>
     <script src="{{ url_for('static', filename='js/passwordDisplay.js') }}"></script>
