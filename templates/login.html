@@ -6,22 +6,33 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
     </head>
     <body>
-        <div>
-            <div> Login to Recco </div>
-            <form action="/login" method="post">
-                <label for="username"> Username: </label>
-                <input type="text" id="username" name="username"><br>
-                <div class="password-wrapper">
-                    <label for="password"> Password: </label>
-                    <input type="password" id="password" name="password"><br>
-                    <button type="button" id="togglePassword"> Show </button>
-                </div>
-                <input type="submit" value="Submit">
+        <div class="login-page-wrapper">
+            <form action="{{ url_for('home') }}" method="get">
+                <button type="submit" class="website-title-home-button"> RECCO </button>
             </form>
-            <div> Don't have an account? </div>
-            <form action="{{ url_for('register') }}" method="get">
-                <button type="submit"> Register </button>
-            </form>
+            <div class="login-wrapper">
+                <div class="login-title-text"> Sign in </div>
+
+                <form class="login-form" action="/login" method="post">
+                    <div class="username-wrapper">
+                        <label for="username" class="username-label"> Username </label>
+                        <input type="text" class="username-input" id="username" name="username">
+                    </div>
+                    <div class="password-wrapper">
+                        <label for="password" class="password-label"> Password </label>
+                        <div class="password-input-wrapper">
+                            <input type="password" class="password-input" id="password" name="password">
+                            <button type="button" class="password-toggle-button" id="togglePassword"> Show </button>
+                        </div>
+                    </div>
+                    <input type="submit" class="login-button" value="Sign in">
+                </form>
+
+                <div class="no-account-question-text"> Don't have an account? </div>
+                <form action="{{ url_for('register') }}" method="get">
+                    <button type="submit" class="register-button"> Register now </button>
+                </form>
+            </div>
         </div>
     </body>
     <script src="{{ url_for('static', filename='js/passwordDisplay.js') }}"></script>
