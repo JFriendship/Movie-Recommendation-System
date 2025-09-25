@@ -143,34 +143,35 @@ def recommendations():
 # @login_required
 def add_rating():
     if request.method == "POST":
-        movie_title = request.form["search-box"]
-        # check to make sure movie is in database
-        rating = float(request.form["rating"])
-        # Get current timestamp
-        current_utc_time = datetime.datetime.now(datetime.timezone.utc)
-        unix_timestamp = int(current_utc_time.timestamp())
+        if 'submit_new_rating_form' in request.form:
+            movie_title = request.form["search-box"]
+            # check to make sure movie is in database
+            rating = float(request.form["rating"])
+            # Get current timestamp
+            current_utc_time = datetime.datetime.now(datetime.timezone.utc)
+            unix_timestamp = int(current_utc_time.timestamp())
 
-        conn = get_db()
-        cur = conn.cursor()
-        # Get movie id 
-        selected_movieId = cur.execute(
-            "SELECT movieId FROM movies WHERE title = ?",
-            (movie_title,)
-        ).fetchone()
-        
-        if selected_movieId is None:
-            return "Movie not found", 404
-        
-        movieId = selected_movieId[0]
+            conn = get_db()
+            cur = conn.cursor()
+            # Get movie id 
+            selected_movieId = cur.execute(
+                "SELECT movieId FROM movies WHERE title = ?",
+                (movie_title,)
+            ).fetchone()
+            
+            if selected_movieId is None:
+                return "Movie not found", 404
+            
+            movieId = selected_movieId[0]
 
-        # Add movie rating to ratings table
-        cur.execute(
-            "INSERT INTO ratings (userId, movieId, rating, timestamp) VALUES (?, ?, ?, ?)",
-            (session["user_id"], movieId, rating, unix_timestamp)
-        )
-        conn.commit()
+            # Add movie rating to ratings table
+            cur.execute(
+                "INSERT INTO ratings (userId, movieId, rating, timestamp) VALUES (?, ?, ?, ?)",
+                (session["user_id"], movieId, rating, unix_timestamp)
+            )
+            conn.commit()
 
-        return render_template('add_rating.html', success=True)
+            return render_template('add_rating.html', success=True)
     return render_template('add_rating.html')
 
 @app.route("/search")

@@ -1,0 +1,21 @@
+let pageWidth = window.innerWidth;
+
+window.addEventListener('resize', function() {
+  pageWidth = window.innerWidth; 
+  createFilmDeco()
+});
+
+function createFilmDeco() {
+    const containers = document.querySelectorAll('#film-deco-wrapper');
+
+    containers.forEach(container => {
+        for (let i  = 0; i < (pageWidth / 40); i++) {
+            const newDiv = document.createElement('div');
+            newDiv.className = 'film-deco';
+
+            container.appendChild(newDiv);
+        }
+    });
+}
+
+createFilmDeco();

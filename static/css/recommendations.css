@@ -1,0 +1,163 @@
+:root {
+    --recco-font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.recommendations-page-wrapper {
+    display: flex;
+    flex-direction: column;
+    background-color: #1E352F;
+    width: 100%;
+    height: 100vh;
+}
+
+/* ============
+    nav bar
+============ */
+
+.nav-bar-wrapper {
+    background-color: #A6C36F;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    top: 0;
+    position: fixed;
+    height: 64px;
+}
+
+.left-aligned-nav-wrapper {
+    display: flex;
+    flex-direction: row;
+    margin-left: 16px;
+    align-items: center;
+}
+.nav-title-text {
+    font-size: 40px;
+    font-family:var(--recco-font-family);
+}
+
+.right-aligned-nav-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: row;
+    flex-grow: 1;
+    align-items: center;
+    margin-right: 40px;
+    gap: 40px;   
+}
+
+.username-text {
+    font-size: 40px;
+    font-family: var(--recco-font-family);
+    margin-left: 12px;
+
+}
+
+/* ============ */
+.recommendations-wrapper {
+    display: flex;
+    flex-direction: column;
+    background-color: #335145;
+}
+
+.film-deco-wrapper {
+    display: flex;
+    flex-direction: row;
+    height: 24px;
+    align-items: center;
+    gap: 20px;
+    margin-left: 4px;
+}
+
+.recommendations-list {
+    display: flex;
+    flex-direction: row;
+    padding: 0px 12px 0px 12px;
+    list-style-type: none;
+    margin: 0;
+    column-gap: 12px;
+    min-width: 1600px;
+    /* overflow: scroll; */
+}
+
+.recommendations-list-item-wrapper {
+    width: 200px;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    background-color: #BEEF9E;
+    border-radius: 4px;
+    justify-content: center;
+    align-items: center;
+}
+
+.film-deco {
+    background-color: #1E352F;
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+}
+
+/* ============
+    hover star rating
+============ */
+.user-new-rating-wrapper {
+    display: None;
+    text-align: center;
+    position: relative;
+    line-height: 1;
+}
+.recommendations-list-item-wrapper:hover .user-new-rating-wrapper{
+    display: inline-block;
+}
+.recommendations-list-item-wrapper:hover {
+    opacity: 80%;
+}
+
+.stars {
+  position: relative;
+  font-size: 2rem;
+  color: #ccc;
+  width: fit-content;
+  margin: auto;
+}
+
+.stars-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  color: gold;
+  width: 0%;
+  pointer-events: none;
+}
+
+.star-rating-range {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  opacity: 0; 
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+}
+
+/* ============ */
+.add-rating-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.add-rating-button {
+    width: 100px;
+
+}

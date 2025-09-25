@@ -6,23 +6,56 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/recommendations.css') }}">
 </head>
 <body>
-    <div class="recommendations-wrapper">
-        <div class="username-text"> {{username}} </div>
+    <div class="recommendations-page-wrapper">
+        <div class="nav-bar-wrapper"> 
+            <div class="left-aligned-nav-wrapper">
+                <div class="nav-title-text"> RECCO </div>
+            </div>
+            <div class="right-aligned-nav-wrapper">
+                <div class="username-text"> {{username}} </div>
+            </div>
+        </div>
+        
 
         {% if recommendations %}
             <h2>Top Recommendations:</h2>
-            <ul>
-                {% for item in recommendations %}
-                    <li>{{ item }}</li>
-                {% endfor %}
-            </ul>
+            <div class="recommendations-wrapper">
+                <div class="film-deco-wrapper" id="film-deco-wrapper">
+
+                </div>
+                <ul class="recommendations-list">
+                    {% for item in recommendations %}
+                        <div class="recommendations-list-item-wrapper">
+                            <li class="recommendations-list-item"> {{ item }} </li>
+                            <div class="user-new-rating-wrapper">
+                                <div class="stars">
+                                    ★★★★★
+                                    <div class="stars-fill">★★★★★</div>
+                                </div>
+                                <input type="range" class="star-rating-range" id="rating" name="rating" min="0" max="5" step="0.5" value="0">
+                                <input type="submit" name="submit_recco_rating" value="Add Rating">
+                            </div>
+                            
+                            
+                        </div>
+                    {% endfor %}
+                </ul>
+                <div class="film-deco-wrapper" id="film-deco-wrapper">
+
+                </div>
+            </div>
         {% elif recommendations is none %}
             <p>No recommendations available for this user.</p>
         {% endif %}
 
         <form action="{{ url_for('add_rating') }}" method="get">
-            <button class="add-rating-button" type="submit"> Add Ratings </button>
+            <div class="add-rating-wrapper">
+                <div> Want better recommendations? </div>
+                <button class="add-rating-button" type="submit"> Add Ratings </button>
+            </div>
         </form>
     </div>
 </body>
+<script src="{{ url_for('static', filename='js/hoverMovieRating.js') }}"></script>
+<script src="{{ url_for('static', filename='js/addFilmSquares.js') }}"></script>
 </html>
