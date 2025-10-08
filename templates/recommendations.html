@@ -28,12 +28,15 @@
                         <div class="recommendations-list-item-wrapper">
                             <li class="recommendations-list-item"> {{ item }} </li>
                             <div class="user-new-rating-wrapper">
-                                <div class="stars">
-                                    ★★★★★
-                                    <div class="stars-fill">★★★★★</div>
-                                </div>
-                                <input type="range" class="star-rating-range" id="rating" name="rating" min="0" max="5" step="0.5" value="0">
-                                <input type="submit" name="submit_recco_rating" value="Add Rating">
+                                <form action="/recommendations" method="post">
+                                    <input type="hidden" name="movie-title" value="{{ item }}">
+                                    <div class="stars">
+                                        ★★★★★
+                                        <div class="stars-fill">★★★★★</div>
+                                    </div>
+                                    <input type="range" class="star-rating-range" id="rating" name="rating" min="0" max="5" step="0.5" value="0">
+                                    <input type="submit" name="submit_recco_rating" value="Add Rating">
+                                </form>
                             </div>
                             
                             
