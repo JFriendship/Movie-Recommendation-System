@@ -187,10 +187,6 @@ def recommendations():
     recommendations = recommendations['title'].tolist()
     return render_template('recommendations.html', recommendations=recommendations, username=session["username"])
 
-@app.route("/manage_ratings", methods=["GET", "POST"])
-def manage_ratings():
-    
-
 @app.route("/add_rating", methods=["GET", "POST"])
 # @login_required
 def add_rating():
