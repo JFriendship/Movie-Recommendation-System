@@ -114,6 +114,23 @@ body {
     position: sticky;
 }
 
+.submit_recco_rating {
+    background: none;
+    border: 2px solid #1E352F;
+    padding: 4px 10px;
+    cursor: pointer;
+    color: #2b2b2b;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.15s ease-in-out;
+    border-radius: 12px;
+}
+
+.submit_recco_rating:hover {
+    background-color: #A6C36F;
+    color: #ffffff;
+}
+
 .film-deco {
     background-color: #1E352F;
     width: 16px;
@@ -205,5 +222,5 @@ body {
 .add-rating-button:hover {
     background-color: #BEEF9E;
     border-color: #828C51;
-    color: #ffffff;
+    color: #1E352F;
 }

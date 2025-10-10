@@ -156,6 +156,7 @@ def recommendations():
             return redirect(url_for("recommendations"))
 
     recommendations = None
+    popular_movies = None
 
     user_id = session["user_id"]
     if user_has_ratings(user_id) == 0:
@@ -185,7 +186,7 @@ def recommendations():
                                                 df_movies=df_movies,
                                                 num_recommendations=10)
     recommendations = recommendations['title'].tolist()
-    return render_template('recommendations.html', recommendations=recommendations, username=session["username"])
+    return render_template('recommendations.html', recommendations=recommendations, popular_movies=popular_movies, username=session["username"])
 
 @app.route("/add_rating", methods=["GET", "POST"])
 # @login_required
