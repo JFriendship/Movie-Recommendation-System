@@ -16,13 +16,14 @@
             </div>
         </div>
         
+        <div class="recommendations-wrapper">
+            {% if recommendations %}
+                <!-- <h2>Top Recommendations:</h2> -->
+                
+                    <!-- <div class="film-deco-wrapper" id="film-deco-wrapper">
 
-        {% if recommendations %}
-            <h2>Top Recommendations:</h2>
-            <div class="recommendations-wrapper">
-                <div class="film-deco-wrapper" id="film-deco-wrapper">
-
-                </div>
+                    </div> -->
+                <div class="list-title-text"> Recommended for you: </div>
                 <ul class="recommendations-list">
                     {% for item in recommendations %}
                         <div class="recommendations-list-item-wrapper">
@@ -38,25 +39,31 @@
                                     <input type="submit" name="submit_recco_rating" value="Add Rating">
                                 </form>
                             </div>
+                            <div class="placeholder"></div>
+                            <div class="placeholder"></div>
                             
                             
                         </div>
                     {% endfor %}
                 </ul>
-                <div class="film-deco-wrapper" id="film-deco-wrapper">
+                    <!-- <div class="dotted-line"></div> -->
+                    
+                    <!-- <div class="film-deco-wrapper" id="film-deco-wrapper"> -->
 
+                    <!-- </div> -->
+                
+            {% elif recommendations is none %}
+                <p>No recommendations available for this user.</p>
+            {% endif %}
+        
+            <form action="{{ url_for('add_rating') }}" method="get">
+                <div class="add-rating-wrapper">
+                    <div> Want better recommendations? </div>
+                    <button class="add-rating-button" type="submit"> Add Ratings </button>
                 </div>
-            </div>
-        {% elif recommendations is none %}
-            <p>No recommendations available for this user.</p>
-        {% endif %}
+            </form>
 
-        <form action="{{ url_for('add_rating') }}" method="get">
-            <div class="add-rating-wrapper">
-                <div> Want better recommendations? </div>
-                <button class="add-rating-button" type="submit"> Add Ratings </button>
-            </div>
-        </form>
+        </div>
     </div>
 </body>
 <script src="{{ url_for('static', filename='js/hoverMovieRating.js') }}"></script>
