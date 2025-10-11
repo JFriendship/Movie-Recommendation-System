@@ -9,7 +9,9 @@ function createFilmDeco() {
     const containers = document.querySelectorAll('#film-deco-wrapper');
 
     containers.forEach(container => {
-        for (let i  = 0; i < (pageWidth / 40); i++) {
+        pageWidth = container.clientWidth;
+        container.innerHTML = '';
+        for (let i  = 0; i < (pageWidth / 36); i++) {
             const newDiv = document.createElement('div');
             newDiv.className = 'film-deco';
 
