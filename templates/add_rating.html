@@ -21,7 +21,7 @@
                 </div>
                 <input type="range" class="star-rating-range" id="rating" name="rating" min="0" max="5" step="0.5" value="0">
             </div>
-            <input type="submit" value="Add Rating">
+            <input type="submit" name="submit_new_rating_form" value="Add Rating">
         </form>
         <form action="{{ url_for('recommendations') }}" method="get">
             <button class="done-button" type="submit"> Done </button>

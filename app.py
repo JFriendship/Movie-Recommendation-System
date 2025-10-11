@@ -48,6 +48,34 @@ def login_required(view):
         return view(**kwargs)
     return wrapped_view
 
+def get_movie_id_from_title(title):
+    movie_title = title
+
+    conn = get_db()
+    cur = conn.cursor()
+    # Get movie id 
+    selected_movieId = cur.execute(
+        "SELECT movieId FROM movies WHERE title = ?",
+        (movie_title,)
+    ).fetchone()
+    
+    if selected_movieId is None:
+        return "Movie not found", 404
+    
+    return selected_movieId[0]
+
+def add_user_rating(user_id, movieId, rating, unix_timestamp):
+    rating = float(rating)
+
+    conn = get_db()
+    cur = conn.cursor()
+
+    cur.execute(
+        "INSERT INTO ratings (userId, movieId, rating, timestamp) VALUES (?, ?, ?, ?)",
+        (user_id, movieId, rating, unix_timestamp)
+    )
+    conn.commit()
+
 
 # -=| Routes |=- #
 @app.route('/')
@@ -104,10 +132,31 @@ def logout():
     session.clear()
     return redirect(url_for("home"))
 
+# @app.route("/add_rating_from_recommendation", methods=["POST"])
+# def add_rating_from_recommendation():
+#     movie_name = request.form['movie-name']
+#     rating = request.form['rating']
+#     print(f"{movie_name} {rating}")
+#     return redirect(url_for("recommendations"))
+
 @app.route('/recommendations', methods=["GET", "POST"])
 @login_required
 def recommendations():
+    if request.method == 'POST':
+        # Add Rating Post Request
+        if 'movie-title' in request.form:
+            movie_title = request.form['movie-title']
+            rating = request.form['rating']
+            movieId = get_movie_id_from_title(movie_title)
+            # Get current timestamp
+            current_utc_time = datetime.datetime.now(datetime.timezone.utc)
+            unix_timestamp = int(current_utc_time.timestamp())
+            add_user_rating(session["user_id"], movieId, rating, unix_timestamp)
+
+            return redirect(url_for("recommendations"))
+
     recommendations = None
+    popular_movies = None
 
     user_id = session["user_id"]
     if user_has_ratings(user_id) == 0:
@@ -137,40 +186,43 @@ def recommendations():
                                                 df_movies=df_movies,
                                                 num_recommendations=10)
     recommendations = recommendations['title'].tolist()
-    return render_template('recommendations.html', recommendations=recommendations, username=session["username"])
+    return render_template('recommendations.html', recommendations=recommendations, popular_movies=popular_movies, username=session["username"])
 
 @app.route("/add_rating", methods=["GET", "POST"])
 # @login_required
 def add_rating():
     if request.method == "POST":
-        movie_title = request.form["search-box"]
-        # check to make sure movie is in database
-        rating = float(request.form["rating"])
-        # Get current timestamp
-        current_utc_time = datetime.datetime.now(datetime.timezone.utc)
-        unix_timestamp = int(current_utc_time.timestamp())
+        if 'submit_new_rating_form' in request.form:
+            movie_title = request.form["search-box"]
+            # check to make sure movie is in database
+            rating = float(request.form["rating"])
+            # Get current timestamp
+            current_utc_time = datetime.datetime.now(datetime.timezone.utc)
+            unix_timestamp = int(current_utc_time.timestamp())
 
-        conn = get_db()
-        cur = conn.cursor()
-        # Get movie id 
-        selected_movieId = cur.execute(
-            "SELECT movieId FROM movies WHERE title = ?",
-            (movie_title,)
-        ).fetchone()
-        
-        if selected_movieId is None:
-            return "Movie not found", 404
-        
-        movieId = selected_movieId[0]
+            movieId = get_movie_id_from_title(movie_title)
+            add_user_rating(session["user_id"], movieId, rating, unix_timestamp)
+            # conn = get_db()
+            # cur = conn.cursor()
+            # # Get movie id 
+            # selected_movieId = cur.execute(
+            #     "SELECT movieId FROM movies WHERE title = ?",
+            #     (movie_title,)
+            # ).fetchone()
+            
+            # if selected_movieId is None:
+            #     return "Movie not found", 404
+            
+            # movieId = selected_movieId[0]
 
-        # Add movie rating to ratings table
-        cur.execute(
-            "INSERT INTO ratings (userId, movieId, rating, timestamp) VALUES (?, ?, ?, ?)",
-            (session["user_id"], movieId, rating, unix_timestamp)
-        )
-        conn.commit()
+            # Add movie rating to ratings table
+            # cur.execute(
+            #     "INSERT INTO ratings (userId, movieId, rating, timestamp) VALUES (?, ?, ?, ?)",
+            #     (session["user_id"], movieId, rating, unix_timestamp)
+            # )
+            # conn.commit()
 
-        return render_template('add_rating.html', success=True)
+            return render_template('add_rating.html', success=True)
     return render_template('add_rating.html')
 
 @app.route("/search")
