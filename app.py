@@ -64,6 +64,22 @@ def get_movie_id_from_title(title):
     
     return selected_movieId[0]
 
+def get_user_ratings():
+    conn = get_db()
+    cur = conn.cursor()
+
+    userId = session["user_id"]
+
+    cur.execute(
+        "SELECT movieId, rating, timestamp FROM ratings WHERE userId = ? ORDER BY timestamp DESC",
+        (userId,)
+    )
+
+    user_ratings = cur.fetchall()
+
+    return user_ratings
+
+
 def add_user_rating(user_id, movieId, rating, unix_timestamp):
     rating = float(rating)
 
@@ -186,6 +202,7 @@ def recommendations():
                                                 df_movies=df_movies,
                                                 num_recommendations=10)
     recommendations = recommendations['title'].tolist()
+
     return render_template('recommendations.html', recommendations=recommendations, popular_movies=popular_movies, username=session["username"])
 
 @app.route("/add_rating", methods=["GET", "POST"])
