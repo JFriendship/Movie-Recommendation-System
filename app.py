@@ -64,6 +64,20 @@ def get_movie_id_from_title(title):
     
     return selected_movieId[0]
 
+def get_movie_title_from_id(movieId):
+    conn = get_db()
+    cur = conn.cursor()
+
+    selected_movie_title = cur.execute(
+        "SELECT title FROM movies WHERE movieId = ?",
+        (movieId,)
+    ).fetchone()
+
+    if selected_movie_title is None:
+        return "Movie Title not found", 404
+    
+    return selected_movie_title[0]
+
 def get_user_ratings():
     conn = get_db()
     cur = conn.cursor()
@@ -204,6 +218,21 @@ def recommendations():
     recommendations = recommendations['title'].tolist()
 
     return render_template('recommendations.html', recommendations=recommendations, popular_movies=popular_movies, username=session["username"])
+
+@app.route("/manage_ratings", methods=["GET", "POST"])
+@login_required
+def manage_ratings():
+    if request.method == "POST":
+        # Add new rating
+        pass
+    
+    user_ratings = []
+    raw_user_ratings = get_user_ratings()
+    for movieId, rating, timestamp in raw_user_ratings:
+        movie_title = get_movie_title_from_id(movieId)
+        user_ratings.append((movie_title, rating))
+
+    return render_template('manage_ratings.html', user_ratings=user_ratings, username=session["username"])
 
 @app.route("/add_rating", methods=["GET", "POST"])
 # @login_required

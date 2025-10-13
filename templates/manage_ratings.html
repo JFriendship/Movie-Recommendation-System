@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title> Manage Ratings | Recco </title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/manage_ratings.css') }}">
+    </head>
+
+    <body>
+        <div class="manage-ratings-page-wrapper">
+            <!-- Nav Bar -->
+            <div class="nav-bar-wrapper"> 
+                <div class="left-aligned-nav-wrapper">
+                    <div class="nav-title-text"> RECCO </div>
+                </div>
+                <div class="right-aligned-nav-wrapper">
+                    <div class="username-text"> {{username}} </div>
+                </div>
+            </div>
+
+            <!-- Manage Ratings -->
+            <div class="manage-ratings-wrapper">
+                <div class="rating-list-wrapper">
+                    <ul class="rating-list">
+                        {% for movie_title, rating in user_ratings %}
+                            <li> 
+                                <div> {{ movie_title }} </div>
+                                <div> {{ rating }} </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+    </body>
+
+</html>
