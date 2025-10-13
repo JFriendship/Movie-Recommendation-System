@@ -232,7 +232,7 @@ def manage_ratings():
         movie_title = get_movie_title_from_id(movieId)
         user_ratings.append((movie_title, rating))
 
-    return render_template('manage_ratings.html', user_ratings=user_ratings)
+    return render_template('manage_ratings.html', user_ratings=user_ratings, username=session["username"])
 
 @app.route("/add_rating", methods=["GET", "POST"])
 # @login_required

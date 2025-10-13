@@ -7,3 +7,62 @@ body {
     padding: 0;
 }
 
+.manage-ratings-page-wrapper {
+    display: flex;
+    flex-direction: column;
+    background-color: #1E352F;
+    width: 100%;
+    height: 100vh;
+}
+
+/* ============
+    nav bar
+============ */
+
+.nav-bar-wrapper {
+    background-color: #A6C36F;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    top: 0;
+    position: fixed;
+    height: 64px;
+}
+
+.left-aligned-nav-wrapper {
+    display: flex;
+    flex-direction: row;
+    margin-left: 16px;
+    align-items: center;
+}
+.nav-title-text {
+    font-size: 40px;
+    font-family:var(--recco-font-family);
+}
+
+.right-aligned-nav-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: row;
+    flex-grow: 1;
+    align-items: center;
+    margin-right: 40px;
+    gap: 40px;   
+}
+
+.username-text {
+    font-size: 40px;
+    font-family: var(--recco-font-family);
+    margin-left: 12px;
+
+}
+
+/* ============ */
+.manage-ratings-wrapper {
+    display: flex;
+    flex-direction: column;
+    background-color: #335145;
+    margin-top: 64px;
+    width: 100%;
+    flex: 1;
+}
