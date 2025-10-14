@@ -268,7 +268,8 @@ def add_rating():
             # )
             # conn.commit()
 
-            return render_template('add_rating.html', success=True)
+            # return render_template('add_rating.html', success=True)
+            return redirect(url_for("manage_ratings"))
     return render_template('add_rating.html')
 
 @app.route("/search")
