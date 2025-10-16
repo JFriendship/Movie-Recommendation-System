@@ -79,7 +79,7 @@ body {
     list-style-type: none;
     padding: 0;
     margin: 0;
-    max-height: calc(100vh - 64px);
+    max-height: calc(100vh - 64px - 36px);
     overflow-y: auto;
     /* box-sizing: border-box; */
     scrollbar-color: #1E352F #335145;
@@ -88,11 +88,19 @@ body {
     /* min-width: 424px; */
 }
 
+.rating-list-title-text {
+    font-family: var(--recco-font-family);
+    font-size: 32px;
+    color: #BEEF9E;
+    margin-left: 4px;
+    height: 32px;
+    margin-bottom: 4px;
+}
+
 .rating-list-item {
     background-color: #1E352F;
     /* width: calc(100% - 16px); */
     width: 100%;
-    margin-top: 8px;
     margin-bottom: 8px;
     /* margin-left: 8px; */
     /* margin: 8px 0px 8px 8px; */
