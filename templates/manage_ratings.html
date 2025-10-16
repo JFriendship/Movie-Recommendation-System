@@ -26,7 +26,8 @@
                         {% for movie_title, rating in user_ratings %}
                             <li class="rating-list-item"> 
                                 <div class="rating-list-movie-title-text"> {{ movie_title }} </div>
-                                <div class="rating-list-movie-rating-text"> &emsp; | &emsp; {{ rating }} </div>
+                                <div class="rating-list-text-divider"></div>
+                                <div class="rating-list-movie-rating-text"> {{ rating }} </div>
                             </li>
                         {% endfor %}
                     </ul>

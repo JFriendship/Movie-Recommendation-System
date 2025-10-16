@@ -115,13 +115,22 @@ body {
 .rating-list-movie-title-text {
     font-family: var(--recco-font-family);
     margin-right: auto;
-    max-width: 300px;
+    width: 300px;
     margin-left: 8px;
     
 }
 
 .rating-list-movie-rating-text {
     font-family: var(--recco-font-family);
+    margin-left: auto;
+    margin-right: 8px;
+}
+
+.rating-list-text-divider {
+    height: 40px;
+    width: 2px;
+    background-color: #335145;
+    border-radius: 8px;
     margin-left: auto;
     margin-right: 8px;
 }
