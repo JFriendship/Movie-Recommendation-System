@@ -68,6 +68,65 @@ body {
 }
 
 /* ============
+    Rating List
+============ */
+
+.rating-list-wrapper {
+    background-color: #335145;
+}
+
+.rating-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    max-height: calc(100vh - 64px);
+    overflow-y: auto;
+    /* box-sizing: border-box; */
+    scrollbar-color: #1E352F #335145;
+    width: 100%;
+    margin-left: 8px;
+    /* min-width: 424px; */
+}
+
+.rating-list-item {
+    background-color: #1E352F;
+    /* width: calc(100% - 16px); */
+    width: 100%;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    /* margin-left: 8px; */
+    /* margin: 8px 0px 8px 8px; */
+    /* padding: 8px; */
+    border-radius: 8px;
+    /* box-sizing: border-box; */
+    
+
+    color:#eeeeee;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    /* justify-content: space-between; */
+
+    height: 60px;
+    max-width: 400px;
+
+}
+
+.rating-list-movie-title-text {
+    font-family: var(--recco-font-family);
+    margin-right: auto;
+    max-width: 300px;
+    margin-left: 8px;
+    
+}
+
+.rating-list-movie-rating-text {
+    font-family: var(--recco-font-family);
+    margin-left: auto;
+    margin-right: 8px;
+}
+
+/* ============
     Add Ratings
 ============ */
 

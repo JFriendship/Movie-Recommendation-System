@@ -24,9 +24,9 @@
                 <div class="rating-list-wrapper">
                     <ul class="rating-list">
                         {% for movie_title, rating in user_ratings %}
-                            <li> 
-                                <div> {{ movie_title }} </div>
-                                <div> {{ rating }} </div>
+                            <li class="rating-list-item"> 
+                                <div class="rating-list-movie-title-text"> {{ movie_title }} </div>
+                                <div class="rating-list-movie-rating-text"> &emsp; | &emsp; {{ rating }} </div>
                             </li>
                         {% endfor %}
                     </ul>
