@@ -35,12 +35,15 @@
                 </div>
 
                 <!-- Add Ratings -->
-                <form action="/add_rating" method="post">
-                    <input class="user-new-movie" type="text" id="search-box" name="search-box" placeholder="Search movies..." />
-                    <div id="search-results-wrapper">
-                        <ul id="results-list">
-                            <div id="results"></div>
-                        </ul>
+                <form class="add-rating-wrapper" action="/add_rating" method="post">
+                    <div class="add-rating-text"> ADD AND UPDATE RATINGS</div>
+                    <div class="search-wrapper">
+                        <input class="movie-search-input" type="text" id="search-box" name="search-box" placeholder="Search movies..." />
+                        <div class="search-results-wrapper" id="search-results-wrapper">
+                            <ul class="search-results-list" id="results-list">
+                                <div class="search-results" id="results"></div>
+                            </ul>
+                        </div>
                     </div>
                     <div class="user-new-rating-wrapper">
                         <div class="stars">
@@ -49,7 +52,7 @@
                         </div>
                         <input type="range" class="star-rating-range" id="rating" name="rating" min="0" max="5" step="0.5" value="0">
                     </div>
-                    <input type="submit" name="submit_new_rating_form" value="Add Rating">
+                    <input type="submit" class="add-rating-button" name="submit_new_rating_form" value="Add Rating">
                 </form>
 
 
