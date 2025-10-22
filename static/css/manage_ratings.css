@@ -73,6 +73,8 @@ body {
 
 .rating-list-wrapper {
     background-color: #335145;
+    display: flex;
+    flex-direction: column;
 }
 
 .rating-list {
@@ -81,8 +83,10 @@ body {
     margin: 0;
     max-height: calc(100vh - 64px - 36px);
     overflow-y: auto;
+    /* scrollbar-gutter: stable; */
     /* box-sizing: border-box; */
     scrollbar-color: #1E352F #335145;
+    /* scrollbar-width: 8px; */
     width: 100%;
     margin-left: 8px;
     /* min-width: 424px; */
@@ -146,12 +150,85 @@ body {
 /* ============
     Add Ratings
 ============ */
+.add-rating-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.add-rating-text {
+    font-family: var(--recco-font-family);
+    font-size: 32px;
+    color: #BEEF9E;
+    height: 32px;
+    margin-bottom: 16px;
+}
+
+.movie-search-input {
+    width: 800px;
+    min-width: 500px;
+    height: 24px;
+    background-color: #1E352F;
+    /* border-color: #335145; */
+    border: 0;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+    border-style: solid;
+    border-radius: 16px;
+    font-family: var(--recco-font-family);
+    color: #eeeeee;
+    padding: 16px;
+    font-size: 16px;
+    /* position: fixed; */
+}
+
+.movie-search-input:focus {
+    outline: none;
+}
 
 .user-new-rating-wrapper {
   text-align: center;
   position: relative;
   line-height: 1;
   display: inline-block;
+  margin-top: 12px;
+}
+
+.search-results-wrapper {
+    
+    margin-top: -8px;
+    /* padding-top: 16px; */
+    
+    position: relative;
+}
+
+.search-results-list {
+    margin: 0px;
+    padding: 0;
+    padding-top: 8px;
+    background-color: #1E352F;
+    position: absolute;
+    top: 100%;
+    z-index: 1000;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+}
+
+.search-results {
+    list-style: none;
+    margin: 0;
+}
+
+.search-suggestion-item {
+    /* gap: 8px; */
+    color: #eeeeee;
+    padding: 8px;
+}
+
+.search-suggestion-item:hover {
+    background-color: #27443c;
+    cursor: pointer;
 }
 
 .stars {
@@ -183,4 +260,19 @@ body {
   cursor: pointer;
   margin: 0;
   padding: 0;
+}
+
+.add-rating-button {
+    background-color: #BEEF9E;
+    border-radius: 16px;
+    border: 2px solid #828C51;
+    color: #0e0e0e;
+    margin-top: 4px;
+    padding: 4px 12px 4px 12px;
+}
+
+.add-rating-button:hover {
+    background-color: #90b17b;
+    color: #eeeeee;
+    cursor: pointer;
 }
