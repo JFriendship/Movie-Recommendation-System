@@ -28,6 +28,10 @@
                             <li class="rating-list-item"> 
                                 <div class="rating-list-movie-title-text"> {{ movie_title }} </div>
                                 <div class="rating-list-text-divider"></div>
+                                <form action="delete_rating" method="POST">
+                                    <input type="hidden" name=movie_title value="{{ movie_title }}">
+                                    <input type="submit" class="delete-rating-button" value="X">
+                                </form>
                                 <div class="rating-list-movie-rating-text"> {{ rating }} </div>
                             </li>
                         {% endfor %}
