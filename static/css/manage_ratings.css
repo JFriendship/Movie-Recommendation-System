@@ -122,6 +122,11 @@ body {
     height: 60px;
     max-width: 400px;
 
+    position: relative;
+}
+
+.rating-list-item:hover {
+    opacity: 80%;
 }
 
 .rating-list-movie-title-text {
@@ -129,13 +134,6 @@ body {
     margin-right: auto;
     width: 300px;
     margin-left: 8px;
-    
-}
-
-.rating-list-movie-rating-text {
-    font-family: var(--recco-font-family);
-    margin-left: auto;
-    margin-right: 8px;
 }
 
 .rating-list-text-divider {
@@ -146,6 +144,34 @@ body {
     margin-left: auto;
     margin-right: 8px;
 }
+
+.delete-rating-button {
+    display: none;
+    position: absolute;
+
+    font-weight: 600;
+    font-size: 16px;
+    background-color: rgb(197, 86, 86);
+    border: 2px solid #0e0e0e;
+    color: #eee;
+    border-radius: 4px;
+    top: 30%;
+}
+
+.delete-rating-button:hover {
+    background-color: rgb(156, 61, 61);
+}
+
+.rating-list-item:hover .delete-rating-button {
+    display: inline-block;
+}
+
+.rating-list-movie-rating-text {
+    font-family: var(--recco-font-family);
+    margin-left: auto;
+    margin-right: 8px;
+}
+
 
 /* ============
     Add Ratings

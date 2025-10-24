@@ -106,6 +106,16 @@ def add_user_rating(user_id, movieId, rating, unix_timestamp):
     )
     conn.commit()
 
+def delete_user_rating(user_id, movieId):
+    conn = get_db()
+    cur = conn.cursor()
+
+    cur.execute(
+        "DELETE FROM ratings WHERE userId = ? AND movieId = ?",
+        (user_id, movieId)
+    )
+
+    conn.commit()
 
 # -=| Routes |=- #
 @app.route('/')
@@ -248,29 +258,18 @@ def add_rating():
 
             movieId = get_movie_id_from_title(movie_title)
             add_user_rating(session["user_id"], movieId, rating, unix_timestamp)
-            # conn = get_db()
-            # cur = conn.cursor()
-            # # Get movie id 
-            # selected_movieId = cur.execute(
-            #     "SELECT movieId FROM movies WHERE title = ?",
-            #     (movie_title,)
-            # ).fetchone()
-            
-            # if selected_movieId is None:
-            #     return "Movie not found", 404
-            
-            # movieId = selected_movieId[0]
 
-            # Add movie rating to ratings table
-            # cur.execute(
-            #     "INSERT INTO ratings (userId, movieId, rating, timestamp) VALUES (?, ?, ?, ?)",
-            #     (session["user_id"], movieId, rating, unix_timestamp)
-            # )
-            # conn.commit()
-
-            # return render_template('add_rating.html', success=True)
             return redirect(url_for("manage_ratings"))
     return render_template('add_rating.html')
+
+@app.route("/delete_rating", methods=["POST"])
+def delete_rating():
+    movie_title = request.form["movie_title"]
+    movieId = get_movie_id_from_title(movie_title)
+    delete_user_rating(session["user_id"], movieId)
+
+    return redirect(url_for("manage_ratings"))
+
 
 @app.route("/search")
 def search():
