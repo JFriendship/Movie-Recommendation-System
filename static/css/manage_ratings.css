@@ -213,6 +213,15 @@ body {
     outline: none;
 }
 
+/* Maintains colours when using default autocomplete */
+.movie-search-input:-webkit-autofill,
+.movie-search-input:-webkit-autofill:hover,
+.movie-search-input:-webkit-autofill:focus,
+.movie-search-input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0px 1000px #1E352F inset !important; 
+    -webkit-text-fill-color: #eeeeee !important;
+}
+
 .user-new-rating-wrapper {
   text-align: center;
   position: relative;
