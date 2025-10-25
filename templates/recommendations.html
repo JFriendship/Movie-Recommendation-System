@@ -10,6 +10,10 @@
         <div class="nav-bar-wrapper"> 
             <div class="left-aligned-nav-wrapper">
                 <div class="nav-title-text"> RECCO </div>
+                <div class="recommendations-navbar"> RECOMMENDATIONS </div>
+                <form action="{{ url_for('manage_ratings') }}">
+                    <button class="manage-ratings-navbar" type="submit"> MANAGE RATINGS </button>
+                </form>
             </div>
             <div class="right-aligned-nav-wrapper">
                 <div class="username-text"> {{username}} </div>
