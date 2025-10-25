@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title> Manage Ratings | Recco </title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/manage_ratings.css') }}">
+    </head>
+
+    <body>
+        <div class="manage-ratings-page-wrapper">
+            <!-- Nav Bar -->
+            <div class="nav-bar-wrapper"> 
+                <div class="left-aligned-nav-wrapper">
+                    <div class="nav-title-text"> RECCO </div>
+                    <form action="{{ url_for('recommendations') }}">
+                        <button class="recommendations-navbar" type="submit"> RECOMMENDATIONS </button>
+                    </form>
+                    <div class="manage-ratings-navbar"> MANAGE RATINGS </div>
+                </div>
+                <div class="right-aligned-nav-wrapper">
+                    <div class="username-text"> {{username}} </div>
+                </div>
+            </div>
+
+            <!-- Manage Ratings -->
+            <div class="manage-ratings-wrapper">
+                <!-- Rating List -->
+                <div class="rating-list-wrapper">
+                    <div class="rating-list-title-text"> MOVIE RATINGS </div>
+                    <ul class="rating-list">
+                        {% for movie_title, rating in user_ratings %}
+                            <li class="rating-list-item"> 
+                                <div class="rating-list-movie-title-text"> {{ movie_title }} </div>
+                                <div class="rating-list-text-divider"></div>
+                                <form action="delete_rating" method="POST">
+                                    <input type="hidden" name=movie_title value="{{ movie_title }}">
+                                    <input type="submit" class="delete-rating-button" value="X">
+                                </form>
+                                <div class="rating-list-movie-rating-text"> {{ rating }} </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- Add Ratings -->
+                <form class="add-rating-wrapper" action="/add_rating" method="post">
+                    <div class="add-rating-text"> ADD AND UPDATE RATINGS </div>
+                    <div class="search-wrapper">
+                        <input class="movie-search-input" type="text" id="search-box" name="search-box" placeholder="Search movies..." />
+                        <div class="search-results-wrapper" id="search-results-wrapper">
+                            <ul class="search-results-list" id="results-list">
+                                <div class="search-results" id="results"></div>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="user-new-rating-wrapper">
+                        <div class="stars">
+                            ★★★★★
+                            <div class="stars-fill">★★★★★</div>
+                        </div>
+                        <input type="range" class="star-rating-range" id="rating" name="rating" min="0" max="5" step="0.5" value="0">
+                    </div>
+                    <input type="submit" class="add-rating-button" name="submit_new_rating_form" value="Add Rating">
+                </form>
+
+
+            </div>
+
+            
+        </div>
+
+    </body>
+    <script src="{{ url_for('static', filename='js/search.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ratingStars.js') }}"></script>
+
+</html>
