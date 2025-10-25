@@ -40,6 +40,40 @@ body {
     font-family:var(--recco-font-family);
 }
 
+.recommendations-navbar {
+    background: none;
+    border: none;
+    border-radius: 8px;
+    font-size: 24px;
+    font-family: var(--recco-font-family);
+    cursor: pointer;
+    margin-left: 12px;
+    padding: 4px;
+    
+}
+
+.recommendations-navbar:hover {
+    background-color: #95af63;
+}
+
+.manage-ratings-navbar {
+    background: none;
+    border: none;
+    border-radius: 8px;
+    font-size: 24px;
+    font-family: var(--recco-font-family);
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+    margin-left: 16px;
+    padding: 4px;
+}
+
+.manage-ratings-navbar:hover {
+    background-color: #95af63;
+}
+
 .right-aligned-nav-wrapper {
     display: flex;
     justify-content: flex-end;
