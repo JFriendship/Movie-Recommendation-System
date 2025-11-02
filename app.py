@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, jsonify, request, session, g
+from flask import Flask, flash, render_template, redirect, url_for, jsonify, request, session, g
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 import recommender.model as model
@@ -58,10 +58,7 @@ def get_movie_id_from_title(title):
         "SELECT movieId FROM movies WHERE title = ?",
         (movie_title,)
     ).fetchone()
-    
-    if selected_movieId is None:
-        return "Movie not found", 404
-    
+
     return selected_movieId[0]
 
 def get_movie_title_from_id(movieId):
@@ -229,13 +226,9 @@ def recommendations():
 
     return render_template('recommendations.html', recommendations=recommendations, popular_movies=popular_movies, username=session["username"])
 
-@app.route("/manage_ratings", methods=["GET", "POST"])
+@app.route("/manage_ratings", methods=["GET"])
 @login_required
 def manage_ratings():
-    if request.method == "POST":
-        # Add new rating
-        pass
-    
     user_ratings = []
     raw_user_ratings = get_user_ratings()
     for movieId, rating, timestamp in raw_user_ratings:
@@ -256,8 +249,11 @@ def add_rating():
             current_utc_time = datetime.datetime.now(datetime.timezone.utc)
             unix_timestamp = int(current_utc_time.timestamp())
 
-            movieId = get_movie_id_from_title(movie_title)
-            add_user_rating(session["user_id"], movieId, rating, unix_timestamp)
+            try:
+                movieId = get_movie_id_from_title(movie_title)
+                add_user_rating(session["user_id"], movieId, rating, unix_timestamp)
+            except:
+                flash("Invalid Movie Title", 'error')
 
             return redirect(url_for("manage_ratings"))
     return render_template('add_rating.html')

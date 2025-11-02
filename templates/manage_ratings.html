@@ -45,6 +45,15 @@
                 <!-- Add Ratings -->
                 <form class="add-rating-wrapper" action="/add_rating" method="post">
                     <div class="add-rating-text"> ADD AND UPDATE RATINGS </div>
+                    {% with messages = get_flashed_messages(with_categories=True) %}
+                        {% if messages %}
+                            <ul class="flashes">
+                                {% for category, message in messages %}
+                                    <li class="{{ category }}"> {{ message }} </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    {% endwith %}
                     <div class="search-wrapper">
                         <input class="movie-search-input" type="text" id="search-box" name="search-box" placeholder="Search movies..." />
                         <div class="search-results-wrapper" id="search-results-wrapper">
