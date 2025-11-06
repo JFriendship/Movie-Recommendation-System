@@ -90,6 +90,31 @@ def get_user_ratings():
 
     return user_ratings
 
+def get_popular_recommendations():
+    conn = get_db()
+    cur = conn.cursor()
+    
+    userId = session["user_id"]
+
+    cur.execute(
+        """
+            SELECT movies.title, AVG(ratings.rating) AS avg_rating, COUNT(*) AS num_ratings
+            FROM movies
+            JOIN ratings ON movies.movieId = ratings.movieId
+            WHERE movies.movieId NOT IN (SELECT movieId FROM ratings WHERE userId = ?)
+            GROUP BY movies.movieId, movies.title
+            HAVING COUNT(*) >= 25
+            ORDER BY avg_rating DESC
+            LIMIT 10
+        """,
+        (userId,)
+    )
+
+    popular_ratings = cur.fetchall()
+
+    popular_titles = [row[0] for row in popular_ratings]
+
+    return popular_titles
 
 def add_user_rating(user_id, movieId, rating, unix_timestamp):
     rating = float(rating)
@@ -193,7 +218,7 @@ def recommendations():
             return redirect(url_for("recommendations"))
 
     recommendations = None
-    popular_movies = None
+    popular_movies = get_popular_recommendations()
 
     user_id = session["user_id"]
     if user_has_ratings(user_id) == 0:
