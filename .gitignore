@@ -2,3 +2,4 @@ data/
 recommender/__pycache__/
 db/
 .env
+.DS_Store
