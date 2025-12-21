@@ -15,6 +15,8 @@ RECCO is a movie recommendation system that is designed to serve fast and releva
 - Create a .env file and create a Flask key variable, called `FLASK_SECRET_KEY`, and set it to whatever you like.
 - Create a data folder. Download the dataset from the provided link in the Dataset section and store the csv files within the data folder.
 - Create the database: Run the three python files in the data_ingestion folder. These are called `create_movies_table.py`, `create_ratings_table.py`, and `create_users_table.py`.
+
+## Usage
 - To start the Flask server, run the `app.py` file
 - Now you can load the Flask website in your browser by going to the link shown in the console.
 
